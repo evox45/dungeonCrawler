@@ -1,6 +1,7 @@
 from lib import menu, fightable, hero
 from lib.mobs import mob
 from lib.mobs.goblin import Goblin
+from lib.mobs.tree import TreeBoss
 
 def main():
     print("Welcome to my Dugeon game")
@@ -19,34 +20,45 @@ def main():
 
 
 def gameLoop():
-    print("We are nwo playing the game")
+    print("\n\n")
+    print("We are now playing the game")
     player = hero.Hero()
+
+    level = 0
 
     # Big game loop
     while player.isAlive():
 
-        goblin = Goblin()
+
+        print("Level {}".format(level))
+        print("Players health is currently{}HP".format(player.curHealth))
+        
+        if level % 3 == 0 and level != 0:
+            enemy = TreeBoss()
+        else:
+            enemy = Goblin()
 
         # Our fighting loop
-        while player.isAlive() and goblin.isAlive():
+        while player.isAlive() and enemy.isAlive():
             print("Player attacks with a {}".format(player.primaryWeapon.name))
-            goblin.takeDmg(player.attack())
+            enemy.takeDmg(player.attack())
 
-            player.takeDmg(goblin.attack())
+            player.takeDmg(enemy.attack())
 
-        print("Killed a goblin")
-        print(player.curHealth)
+        print("Killed a {}".format(enemy.name))
+        
 
         # Allow for looting
-        if player.isAlive() and not goblin.isAlive():
+        if player.isAlive() and not enemy.isAlive():
+            print("\nLoot some items")
             # Generate a new menu object
             lootMenu = menu.Menu()
 
             # TODO Fix bug with empty inventory for enemy spawning the menu
             # Add all items from enemy inventory to the menu
-            for idx, item in enumerate(goblin.inventory.contains):
+            for idx, item in enumerate(enemy.inventory.contains):
                 # Adding item, function to execute on selection, and which item should be taken out
-                lootMenu.addMenuItem(item.name, goblin.inventory.takeOut, idx)
+                lootMenu.addMenuItem(item.name, enemy.inventory.takeOut, idx)
 
             # Display 
             lootMenu.displayMenu()
@@ -60,6 +72,10 @@ def gameLoop():
         print("Player's Inventory")
         for item in player.inventory.contains:
             print(item.name)
+
+        print("\n")
+
+        level += 1
 
 
 if __name__ == "__main__":
