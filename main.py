@@ -1,7 +1,10 @@
 from lib import menu, fightable, hero
 from lib.mobs import mob
 from lib.mobs.goblin import Goblin
-from lib.mobs.tree import TreeBoss
+from lib.mobs.tree import TreeBoss, SunBoss, MoonBoss
+from lib.weapons.weapon import Weapon
+from lib.consumables.consumable import Consumable
+import random
 
 def main():
     print("Welcome to my Dugeon game")
@@ -34,7 +37,7 @@ def gameLoop():
         print("Players health is currently{}HP".format(player.curHealth))
         
         if level % 3 == 0 and level != 0:
-            enemy = TreeBoss()
+            enemy = random.choice ([TreeBoss(), SunBoss(), MoonBoss()])
         else:
             enemy = Goblin()
 
@@ -70,8 +73,17 @@ def gameLoop():
             player.inventory.add(lootMenu.runItem(userInput))
 
         print("Player's Inventory")
-        for item in player.inventory.contains:
-            print(item.name)
+        playerInventoryMenu = menu.Menu()
+        for idx, item in enumerate(player.inventory.contains):
+            if isinstance(item, Weapon):
+                playerInventoryMenu.addMenuItem(item.name, player.switchWeapon, idx)
+            elif isinstance(item, Consumable):
+                playerInventoryMenu.addMenuItem(item.name, item.consume, player)
+        playerInventoryMenu.displayMenu()
+        userInput = input("Select> ")
+        playerInventoryMenu.runItem(userInput)
+
+
 
         print("\n")
 
