@@ -89,6 +89,20 @@ def gameLoop():
 
         level += 1
 
+    print ("\nYou died")
+
+    #connect to your pstgres DB
+    conn = dbConnect()
+    # Open a cursor to perform database operations
+    cur = conn.cursor()
+
+    cur.execute("""
+    INSERT INTO public.highscore (name, score, timestamp) VALUES(%s, %s, %s)
+    """, [name, scoreCurrent, str(datetime.datetime.now())])
+    conn.commit()
+
+    conn.close()
+
 
 if __name__ == "__main__":
     main()
